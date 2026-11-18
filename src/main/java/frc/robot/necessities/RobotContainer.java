@@ -15,6 +15,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.MoveForwardCommand;
+import frc.robot.commands.MoveBackCommand;
+import frc.robot.commands.MoveLeftCommand;
+import frc.robot.commands.MoveRightCommand;
 import frc.robot.necessities.Telemetry;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.swerve.SwerveConstants;
@@ -51,6 +55,12 @@ public class RobotContainer {
                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
+
+        // Slow movement commands
+        joystick.povUp().onTrue(MoveForwardCommand.create(drivetrain, MaxSpeed * 0.1, 2));
+        joystick.povDown().onTrue(MoveBackCommand.create(drivetrain, MaxSpeed * 0.1, 2));
+        joystick.povRight().onTrue(MoveRightCommand.create(drivetrain, MaxSpeed * 0.1, 2));
+        joystick.povLeft().onTrue(MoveLeftCommand.create(drivetrain, MaxSpeed * 0.1, 2));
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
