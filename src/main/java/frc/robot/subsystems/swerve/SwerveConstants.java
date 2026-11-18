@@ -134,7 +134,7 @@ public class SwerveConstants {
     // Front Left
     private static final int kFrontLeftDriveMotorId = 11;
     private static final int kFrontLeftSteerMotorId = 10;
-    private static final int kFrontLeftEncoderId = 1;
+    private static final int kFrontLeftEncoderId = 5;
     private static final Angle kFrontLeftEncoderOffset = Rotations.of(0.181640625);
     private static final boolean kFrontLeftSteerMotorInverted = false;
     private static final boolean kFrontLeftEncoderInverted = false;
