@@ -1,10 +1,6 @@
 package frc.robot.commands;
 
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 import static edu.wpi.first.units.Units.*;
@@ -12,10 +8,10 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-/** Shoot. */
+/** Field-centric move right for a fixed time. */
 public class MoveRightCommand {
     /** 
-     * Returns a Command that moves us right. 
+     * Returns a Command that moves us right (field-centric). 
      * 
      * @param swerve The swerve drivetrain.
      * @param speed The linear speed in meters per second.
@@ -28,27 +24,19 @@ public class MoveRightCommand {
         final SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
-        return Commands.sequence(
-            // Move in the desired direction
-            new RunCommand(() -> {
-                swerve.applyRequest(() ->
-                    driveRequest.withVelocityX(LinearVelocity.ofBaseUnits(0, MetersPerSecond)) // Drive forward with negative Y (forward)
-                        .withVelocityY(LinearVelocity.ofBaseUnits(speed, MetersPerSecond)) // Drive left with negative X (left)
-                        .withRotationalRate(AngularVelocity.ofBaseUnits(0, RadiansPerSecond)) // Drive counterclockwise with negative X (left)
-                );
-            },
-            // Dependencies:
-            swerve)
+        // Move in the desired direction. +X is away from the alliance wall, +Y is to the left.
+        return swerve.applyRequest(() ->
+                driveRequest.withVelocityX(MetersPerSecond.of(0))
+                    .withVelocityY(MetersPerSecond.of(-speed)) // Right is -Y
+                    .withRotationalRate(RadiansPerSecond.of(0))
+            )
             .withTimeout(time)
-        )
-        
-        // finallyDo ensures motors are stopped even if command is cancelled.
-        .finallyDo(() -> {
-            swerve.applyRequest(() ->
-                driveRequest.withVelocityX(LinearVelocity.ofBaseUnits(0, MetersPerSecond))
-                    .withVelocityY(LinearVelocity.ofBaseUnits(0, MetersPerSecond))
-                    .withRotationalRate(AngularVelocity.ofBaseUnits(0, RadiansPerSecond))
-            );
-        });
+
+            // finallyDo ensures motors are stopped even if command is cancelled.
+            .finallyDo(() -> swerve.setControl(
+                driveRequest.withVelocityX(MetersPerSecond.of(0))
+                    .withVelocityY(MetersPerSecond.of(0))
+                    .withRotationalRate(RadiansPerSecond.of(0))
+            ));
     }
 }
